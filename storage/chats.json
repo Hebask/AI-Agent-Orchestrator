@@ -1,0 +1,10 @@
+{
+  "messages": [
+    {
+      "id": "uuid",
+      "role": "user",
+      "text": "hello",
+      "created_at": "..."
+    }
+  ]
+}
