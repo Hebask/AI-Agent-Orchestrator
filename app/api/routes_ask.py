@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field
 from app.services.orchestrator_service import OrchestratorService
 from app.services.chat_service import append_message
 
-
 router = APIRouter(tags=["chat"])
 orchestrator = OrchestratorService()
 
@@ -18,7 +17,22 @@ class AskRequest(BaseModel):
 
 @router.post("/ask")
 def ask(req: AskRequest):
+    # store user message
     append_message(req.user_id, "user", req.message)
+
+    # run orchestration (includes workflow run logging)
     result = orchestrator.run(req.message, user_id=req.user_id)
-    append_message(req.user_id, "assistant", result["reply"], meta={"agent_path": result["agent_path"], "confidence": result["confidence"]})
+
+    # store assistant message + include run_id in meta
+    append_message(
+        req.user_id,
+        "assistant",
+        result.get("reply", ""),
+        meta={
+            "agent_path": result.get("agent_path", []),
+            "confidence": result.get("confidence", 0.0),
+            "run_id": result.get("run_id"),
+        },
+    )
+
     return result

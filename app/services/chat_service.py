@@ -8,4 +8,5 @@ def append_message(user_id: str, role: str, text: str, meta=None):
     return store.append_chat(user_id=user_id, role=role, text=text, meta=meta)
 
 def recent_messages(user_id: str, limit: int = 20) -> List[Dict[str, Any]]:
+    store = get_store()
     return store.get_recent_chats(user_id=user_id, limit=limit)

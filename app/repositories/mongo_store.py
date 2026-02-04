@@ -54,6 +54,55 @@ class MongoStore(Store):
                 return
             raise
 
+        # -------------------- workflow runs --------------------
+
+    def create_run(self, user_id: str, input_text: str) -> str:
+        import uuid
+
+        run_id = str(uuid.uuid4())
+        self.db["workflow_runs"].insert_one(
+            {
+                "run_id": run_id,
+                "user_id": user_id,
+                "input": input_text,
+                "steps": [],
+                "status": "running",
+                "created_at": datetime.utcnow(),
+            }
+        )
+        return run_id
+
+    def append_run_step(self, run_id: str, agent: str, output: dict) -> None:
+        self.db["workflow_runs"].update_one(
+            {"run_id": run_id},
+            {"$push": {"steps": {"agent": agent, "output": output}}},
+        )
+
+    def finalize_run(self, run_id: str, final_reply: str, agent_path: list[str], confidence: float) -> None:
+        self.db["workflow_runs"].update_one(
+            {"run_id": run_id},
+            {
+                "$set": {
+                    "final_reply": final_reply,
+                    "agent_path": agent_path,
+                    "confidence": confidence,
+                    "status": "completed",
+                    "completed_at": datetime.utcnow(),
+                }
+            },
+        )
+
+    def get_run(self, run_id: str) -> dict | None:
+        return self.db["workflow_runs"].find_one({"run_id": run_id}, {"_id": 0})
+
+    def list_runs(self, user_id: str, limit: int = 20) -> list[dict]:
+        return list(
+            self.db["workflow_runs"]
+            .find({"user_id": user_id}, {"_id": 0})
+            .sort("created_at", -1)
+            .limit(limit)
+        )
+
     # -------------------- chats --------------------
 
     def append_chat(
