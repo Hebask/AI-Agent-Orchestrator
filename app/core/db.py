@@ -19,5 +19,5 @@ def get_store() -> Store:
         return _store
 
     from app.repositories.local_json_store import LocalJsonStore
-    _store = LocalJsonStore(base_dir=settings.storage_dir)
+    _store = LocalJsonStore(settings.storage_dir)
     return _store

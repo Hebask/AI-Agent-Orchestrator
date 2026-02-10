@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from openapi_spec_validator import validate_spec
+from openapi_spec_validator import validate
 
 
 def test_openapi_json_exists_and_valid():
@@ -12,4 +12,4 @@ def test_openapi_json_exists_and_valid():
 
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
 
-    validate_spec(spec)
+    validate(spec)
