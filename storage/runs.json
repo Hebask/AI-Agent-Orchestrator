@@ -1,0 +1,87 @@
+[
+  {
+    "run_id": "e376f5b5-acc2-445f-b679-f77a7b810998",
+    "user_id": "u1",
+    "input": "2+2",
+    "steps": [
+      {
+        "agent": "intent",
+        "output": {
+          "agent": "intent",
+          "status": "ok",
+          "data": {
+            "needs_tools": true,
+            "needs_retrieval": false,
+            "confidence": 0.9
+          },
+          "confidence": 0.9,
+          "next": [
+            "tool"
+          ]
+        },
+        "created_at": "2026-02-10T08:13:07.525055Z"
+      },
+      {
+        "agent": "tool",
+        "output": {
+          "agent": "tool",
+          "status": "ok",
+          "data": {
+            "tool": "calculator",
+            "result": {
+              "ok": true,
+              "result": 4.0
+            }
+          },
+          "confidence": 0.9,
+          "next": [
+            "final"
+          ]
+        },
+        "created_at": "2026-02-10T08:13:07.533127Z"
+      },
+      {
+        "agent": "final",
+        "output": {
+          "agent": "final",
+          "status": "ok",
+          "data": {
+            "reply": "4",
+            "confidence": 0.9
+          },
+          "confidence": 0.9,
+          "next": [
+            "safety"
+          ]
+        },
+        "created_at": "2026-02-10T08:13:07.549021Z"
+      },
+      {
+        "agent": "safety",
+        "output": {
+          "agent": "safety",
+          "status": "ok",
+          "data": {
+            "blocked": false
+          },
+          "confidence": 1.0,
+          "next": [
+            "stop"
+          ]
+        },
+        "created_at": "2026-02-10T08:13:07.559041Z"
+      }
+    ],
+    "status": "completed",
+    "created_at": "2026-02-10T08:13:07.516962Z",
+    "final_reply": "4",
+    "agent_path": [
+      "intent",
+      "tool",
+      "final",
+      "safety"
+    ],
+    "confidence": 0.9,
+    "completed_at": "2026-02-10T08:13:07.570813Z"
+  }
+]

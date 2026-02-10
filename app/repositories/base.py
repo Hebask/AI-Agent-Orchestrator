@@ -40,3 +40,23 @@ class Store(ABC):
         query_embedding: Optional[List[float]] = None,
     ) -> List[Dict[str, Any]]:
         raise NotImplementedError
+    
+    @abstractmethod
+    def create_run(self, user_id: str, input_text: str) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def append_run_step(self, run_id: str, agent: str, output: dict) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def finalize_run(self, run_id: str, final_reply: str, agent_path: list[str], confidence: float) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_run(self, run_id: str) -> dict | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    def list_runs(self, user_id: str, limit: int = 20) -> list[dict]:
+        raise NotImplementedError

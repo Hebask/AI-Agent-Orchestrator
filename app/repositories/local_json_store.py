@@ -21,6 +21,7 @@ class LocalJsonStore(Store):
         os.makedirs(self.storage_dir, exist_ok=True)
         self._chats_path = os.path.join(self.storage_dir, "chats.json")
         self._index_path = os.path.join(self.storage_dir, "index.json")
+        self._runs_path = os.path.join(self.storage_dir, "runs.json")
 
         if not os.path.exists(self._chats_path):
             with open(self._chats_path, "w", encoding="utf-8") as f:
@@ -28,6 +29,10 @@ class LocalJsonStore(Store):
         if not os.path.exists(self._index_path):
             with open(self._index_path, "w", encoding="utf-8") as f:
                 json.dump({"files": [], "chunks": []}, f)
+        if not os.path.exists(self._runs_path):
+            with open(self._runs_path, "w", encoding="utf-8") as f:
+                json.dump([], f)
+
 
     def _read_json(self, path: str) -> Any:
         with open(path, "r", encoding="utf-8") as f:
@@ -135,3 +140,55 @@ class LocalJsonStore(Store):
             )
 
         return hits
+    
+    def create_run(self, user_id: str, input_text: str) -> str:
+        runs = self._read_json(self._runs_path)
+        run_id = str(uuid.uuid4())
+        runs.append(
+            {
+                "run_id": run_id,
+                "user_id": user_id,
+                "input": input_text,
+                "steps": [],
+                "status": "running",
+                "created_at": _now_iso(),
+            }
+        )
+        self._write_json(self._runs_path, runs)
+        return run_id
+
+    def append_run_step(self, run_id: str, agent: str, output: dict) -> None:
+        runs = self._read_json(self._runs_path)
+        for r in runs:
+            if r.get("run_id") == run_id:
+                r.setdefault("steps", []).append(
+                    {"agent": agent, "output": output, "created_at": _now_iso()}
+                )
+                break
+        self._write_json(self._runs_path, runs)
+
+    def finalize_run(self, run_id: str, final_reply: str, agent_path: list[str], confidence: float) -> None:
+        runs = self._read_json(self._runs_path)
+        for r in runs:
+            if r.get("run_id") == run_id:
+                r["final_reply"] = final_reply
+                r["agent_path"] = agent_path
+                r["confidence"] = float(confidence)
+                r["status"] = "completed"
+                r["completed_at"] = _now_iso()
+                break
+        self._write_json(self._runs_path, runs)
+
+    def get_run(self, run_id: str) -> dict | None:
+        runs = self._read_json(self._runs_path)
+        for r in runs:
+            if r.get("run_id") == run_id:
+                return r
+        return None
+
+    def list_runs(self, user_id: str, limit: int = 20) -> list[dict]:
+        runs = self._read_json(self._runs_path)
+        user_runs = [r for r in runs if r.get("user_id") == user_id]
+        # ISO timestamps sort correctly as strings
+        user_runs.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+        return user_runs[:limit]
