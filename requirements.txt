@@ -6,3 +6,6 @@ python-dotenv
 pypdf
 aiofiles
 requests
+python-multipart
+openapi-spec-validator==0.7.2
+pytest

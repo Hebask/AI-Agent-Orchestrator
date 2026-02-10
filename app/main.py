@@ -8,7 +8,6 @@ from app.api.routes_ask import router as ask_router
 from app.api.routes_files import router as files_router
 from app.api.routes_runs import router as runs_router
 
-# Load .env early
 load_dotenv()
 
 app = FastAPI(title="AI Agent Orchestrator (Ollama)")
@@ -23,7 +22,6 @@ def health():
         "max_hops": settings.max_hops,
     }
 
-# Routers (NO extra prefixes because routes already include their own paths)
-app.include_router(ask_router)    # provides POST /ask
-app.include_router(files_router)  # provides /files/upload and /files/upload-multiple
-app.include_router(runs_router)   # provides /runs and /runs/{run_id}
+app.include_router(ask_router)   
+app.include_router(files_router) 
+app.include_router(runs_router) 
