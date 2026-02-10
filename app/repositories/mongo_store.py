@@ -10,6 +10,7 @@ from pymongo.errors import OperationFailure
 from .base import Store
 
 
+
 class MongoStore(Store):
     def __init__(self, mongo_uri: str, db_name: str):
         self.client = MongoClient(mongo_uri)

@@ -3,10 +3,10 @@
 Base URL (local): `http://127.0.0.1:8000`
 
 This backend provides:
-- An AI Orchestrator pipeline (`/ask`)
-- PDF upload + ingestion (`/files/upload`, `/files/upload-multiple`)
-- Workflow run tracking (`/runs`, `/runs/{run_id}`)
-- Health/config snapshot (`/health`)
+- An AI Orchestrator pipeline (`POST /ask`)
+- PDF upload + ingestion (`POST /files/upload`, `POST /files/upload-multiple`)
+- Workflow run tracking (`GET /runs`, `GET /runs/{run_id}`)
+- Health/config snapshot (`GET /health`)
 
 ---
 
@@ -20,7 +20,7 @@ Returns service status and key configuration values.
 {
   "status": "ok",
   "ollama_model": "qwen3",
-  "storage": "mongo|local_json|mongo_required_missing_uri",
+  "storage": "mongo",
   "require_mongo": true,
   "max_hops": 6
 }
